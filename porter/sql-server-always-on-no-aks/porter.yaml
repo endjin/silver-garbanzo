@@ -2,7 +2,7 @@ name: sql-server-always-on-no-aks
 version: 0.1.0
 description: "SQL Server Always On for Kubernetes"
 dockerfile: cnab/app/Dockerfile.base
-invocationImage: cnabquickstartstest.azurecr.io/porter/sql-server-always-on-no-aks
+invocationImage: endjincnabdev01.azurecr.io/porter/sql-server-always-on-no-aks
 
 credentials:
 - name: kube_config
