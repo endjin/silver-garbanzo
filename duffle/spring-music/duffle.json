@@ -17,7 +17,7 @@
             "name": "cnab",
             "builder": "docker",
             "configuration": {
-                "registry": "cnabquickstartstest.azurecr.io/duffle"
+                "registry": "endjincnabdev01.azurecr.io/duffle"
             }
         }
     },
