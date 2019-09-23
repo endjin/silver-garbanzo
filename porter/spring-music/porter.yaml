@@ -1,7 +1,7 @@
 name: spring-music
 version: 0.1.0
 description: "Spring Music Demo App with Azure Cosmos DB"
-invocationImage: cnabquickstartstest.azurecr.io/porter/spring-music
+invocationImage: endjincnabdev01.azurecr.io/porter/spring-music
 dockerfile: cnab/app/Dockerfile.base
 
 mixins:
