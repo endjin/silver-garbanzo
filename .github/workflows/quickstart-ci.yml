@@ -1,10 +1,6 @@
 name: Quickstart CI
 on:
-  push:
-    paths:
-      - 'duffle/*'
-      - 'porter/*'
-
+  push
 jobs:
   build:
     name: Quickstart CI
