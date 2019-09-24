@@ -18,15 +18,15 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
           login-server: ${{ secrets.REGISTRY_SERVER }}
       - name: Set Up Agent
-        env:
-          agent_temp_directory: temp
-          repo_name: ${{ github.repository }}
-          pr_number: ${{ github.ref }} # TODO check if we can get PR number
-          repo_local_path: .
-          reason: ${{ github.event }}
-          source_branch: ${{ github.ref }}
-          repo_uri: https://somegithuburi # TODO this can probably go
-          source_version: ${{ github.sha }}
+        # env:
+        #   agent_temp_directory: temp
+        #   repo_name: ${{ github.repository }}
+        #   pr_number: ${{ github.ref }} # TODO check if we can get PR number
+        #   repo_local_path: .
+        #   reason: ${{ github.event }}
+        #   source_branch: ${{ github.ref }}
+        #   repo_uri: https://somegithuburi # TODO this can probably go
+        #   source_version: ${{ github.sha }}
         run: ./build/setup_agent.sh
         shell: bash
       - name: Build bundle
