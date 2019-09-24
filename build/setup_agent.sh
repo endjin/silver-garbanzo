@@ -49,7 +49,7 @@ printf "file:\\n%s\\n" "${files}"
 
 tool=$(echo "${files}"|jq 'if . | contains(["/"]) then .|map(select(contains("/")))[0]|split("/")[0]  else empty end' --raw-output)
 
-echo "##vso[task.setvariable variable=tool]${tool}"
+echo ::set-env name=tool::${tool}
 printf "tool:%s\\n" "${tool}"
 
 
@@ -61,7 +61,7 @@ if [[ ! -z "${tool}" && ("${tool}" == "duffle" || "${tool}" == "porter") ]]; the
         exit 1 
     fi
     folder=$(echo "${files}"|jq --arg tool "${tool}" '.|map(select(startswith($tool)))[0]|split("/")[1]' --raw-output)
-    echo "##vso[task.setvariable variable=tool]${tool}"
+    echo ::set-env name=tool::${tool}
 fi
 
 printf "folder:%s\\n" "${folder}"
@@ -87,8 +87,8 @@ if [ "${tool}" == "duffle" ]; then
 
     # Update the path
 
-    echo "##vso[task.prependpath]${agent_temp_directory}/duffle"
-    echo "##vso[task.setvariable variable=taskdir]${repo_local_path}/duffle/${folder}"
+    echo ::add-path::${agent_temp_directory}/duffle
+    echo ::set-env name=taskdir::${repo_local_path}/duffle/${folder}
 
     cd "${repo_local_path}/duffle/${folder}"
    
@@ -118,8 +118,9 @@ if [ "${tool}" == "duffle" ]; then
     image_repo="${cnab_name}-${ii_name}" 
     echo "image_repo: ${image_repo}"
 
-    echo "##vso[task.setvariable variable=image_repo]${tool}/${image_repo}"
-    echo "##vso[task.setvariable variable=image_registry]${cnab_quickstart_registry}"
+    echo ::set-env name=image_repo::${tool}/${image_repo}
+    echo ::set-env name=image_registry::${cnab_quickstart_registry}
+
     build_required=true
 fi
 
@@ -159,8 +160,8 @@ if [ "${tool}" == "porter" ]; then
 
     # Update the path
 
-    echo "##vso[task.prependpath]${agent_temp_directory}/porter"
-    echo "##vso[task.setvariable variable=taskdir]${repo_local_path}/porter/${folder}"
+    echo ::add-path::${agent_temp_directory}/porter
+    echo ::set-env name=taskdir::${repo_local_path}/porter/${folder}
 
     cd "${repo_local_path}/porter/${folder}"
 
@@ -207,11 +208,11 @@ if [ "${tool}" == "porter" ]; then
     fi
     image_repo="${cnab_name}" 
     echo "image_repo: ${image_repo}"
-    echo "##vso[task.setvariable variable=image_repo]${image_repo}"
-    echo "##vso[task.setvariable variable=image_registry]${cnab_quickstart_registry}/${tool}"
-   
+    
+    echo ::set-env name=image_repo::${image_repo}
+    echo ::set-env name=image_registry::${cnab_quickstart_registry}/${tool}
 
     build_required=true
 fi
 
-echo "##vso[task.setvariable variable=BuildRequired]${build_required}"
+echo ::set-env name=BuildRequired::${build_required}
