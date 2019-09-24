@@ -35,11 +35,11 @@ jobs:
         run: ./build/setup_agent.sh
         shell: bash
       - name: Build bundle
-        env:
-          tool: ${tool}
-          image_repo: ${image_repo}
-          image_registry: ${image_registry}
-          porter_image_suffix: ${porter_image_suffix}
+        # env:
+        #   tool: ${tool}
+        #   image_repo: ${image_repo}
+        #   image_registry: ${image_registry}
+        #   porter_image_suffix: ${porter_image_suffix}
         run: ./build/build_bundle.sh
         shell: bash
       - name: Docker Push
@@ -47,7 +47,7 @@ jobs:
       - name: Push bundle.json to registry using ORAS
         env:
           agent_temp_directory: temp
-          image_repo: ${image_repo}
-          image_registry: ${image_registry}
+          # image_repo: ${image_repo}
+          # image_registry: ${image_registry}
         run: ./build/push_bundle.sh
         shell: bash
