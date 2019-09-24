@@ -25,7 +25,7 @@ jobs:
           repo_local_path: .
           reason: ${{ github.event_name }}
           source_branch: ${{ github.ref }}
-          repo_uri: https://somegithuburi # TODO this can probably go
+          repo_uri: https://github.com/${{ github.repository }}
           source_version: ${{ github.sha }}
         run: ./build/setup_agent.sh
         shell: bash
