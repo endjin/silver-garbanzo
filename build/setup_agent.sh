@@ -160,7 +160,7 @@ if [ "${tool}" == "porter" ]; then
 
     # Update the path
 
-    taskdir = ./${repo_local_path}/porter/${folder}
+    taskdir=./${repo_local_path}/porter/${folder}
 
     echo ::add-path::${porter_home}
     echo ::set-env name=taskdir::${taskdir}
