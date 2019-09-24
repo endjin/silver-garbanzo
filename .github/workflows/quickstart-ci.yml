@@ -1,15 +1,9 @@
 name: Quickstart CI
 on:
-  - push:
-      branches:
-        - master
-      paths:
-        - 'duffle/*'
-        - 'porter/*'
-  - pull_request:
-      paths:
-        - 'duffle/*'
-        - 'porter/*'
+  push:
+    paths:
+      - 'duffle/*'
+      - 'porter/*'
 
 jobs:
   build:
