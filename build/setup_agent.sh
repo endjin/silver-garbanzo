@@ -29,14 +29,14 @@ echo "Get the files in the PR or merge commit to find the solution folder name"
 
 # TODO ignore files that start with .
 
-if [ "${reason}" == "IndividualCI" ]; then
+if [ "${reason}" == "push" ]; then
     owner_and_repo="${repo_uri##https://github.com/}"
     commit_uri=https://api.github.com/repos/${owner_and_repo}/commits/${source_version}
     echo "Merge Commit uri: ${commit_uri}"
     files=$(curl "${commit_uri}"|jq '[.files[].filename]') 
 fi
 
-if [ "${reason}" == "PullRequest" ]; then
+if [ "${reason}" == "pull_request" ]; then
     pr_uri="https://api.github.com/repos/${repo_name}/pulls/${pr_number}/files"
     echo "PR uri: ${pr_uri}"
     files=$(curl "${pr_uri}"|jq '[.[].filename]') 
