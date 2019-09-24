@@ -1,0 +1,52 @@
+name: Quickstart CI
+# This workflow is triggered on pushes to the repository.
+on:
+  [push, pull_request]:
+    paths:
+    - 'duffle/*'
+    - 'porter/*'
+
+jobs:
+  build:
+    name: Quickstart CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repo'
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: 'Docker Registry Login'
+        uses: azure/container-actions/docker-login@master
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+          loginServer: ${{ secrets.REGISTRY_SERVER }}
+      - name: 'Set Up Agent'
+        env:
+          agent_temp_directory: temp
+          repo_name: ${{ github.repository }}
+          pr_number: ${{ github.ref }} # TODO check if we can get PR number
+          repo_local_path: '.'
+          reason: ${{ github.event }}
+          source_branch: ${{ github.ref }}
+          repo_uri: 'https://somegithuburi' # TODO this can probably go
+          source_version:  ${{ github.sha	}}
+        run: ./build/setup_agent.sh
+        shell: bash
+      - name: 'Build bundle'
+        env:
+          tool: ${tool}
+          image_repo: ${image_repo}
+          image_registry: ${image_registry}
+          porter_image_suffix: ${porter_image_suffix}
+        run: ./build/build_bundle.sh
+        shell: bash
+      - name: 'Docker Push'
+        run: docker push ${{ secrets.REGISTRY_SERVER }}/${image_repo}:${ii_tag}
+      - name: 'Push bundle.json to registry using ORAS'
+        env:
+          agent_temp_directory: temp
+          image_repo: ${image_repo}
+          image_registry: ${image_registry}
+        run: ./build/push_bundle.sh
+        shell: bash
