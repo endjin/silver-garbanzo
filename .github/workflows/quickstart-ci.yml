@@ -36,7 +36,7 @@ jobs:
         shell: bash
       - name: Build bundle
         run: ./build/build_bundle.sh
-        working-directory: ${{ image_repo }}
+        working-directory: ${image_repo}
         shell: bash
       - name: Docker Push
         run: docker push ${{ secrets.REGISTRY_SERVER }}/${image_repo}:${ii_tag}
@@ -44,5 +44,5 @@ jobs:
         env:
           agent_temp_directory: temp
         run: ./build/push_bundle.sh
-        working-directory: ${{ image_repo }}
+        working-directory: ${image_repo}
         shell: bash
