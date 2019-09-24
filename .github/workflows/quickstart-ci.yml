@@ -7,6 +7,11 @@ jobs:
     name: Quickstart CI
     runs-on: ubuntu-latest
     steps:
+      - name: Use python 3.6
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.6'
+          architecture: 'x64'
       - name: Checkout Repo
         uses: actions/checkout@v1
         with:
