@@ -22,7 +22,7 @@ jobs:
           agent_temp_directory: temp
           repo_name: ${{ github.repository }}
           pr_number: ${{ github.ref }} # TODO check if we can get PR number
-          # repo_local_path: .
+          repo_local_path: .
           # reason: ${{ github.event }}
           # source_branch: ${{ github.ref }}
           # repo_uri: https://somegithuburi # TODO this can probably go
