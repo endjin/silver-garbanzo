@@ -1,11 +1,13 @@
 name: Quickstart CI
 # This workflow is triggered on pushes to the repository.
 on:
-  push:
+  - push:
+    branches:
+      - master
     paths:
     - 'duffle/*'
     - 'porter/*'
-  pull_request:
+  - pull_request:
     paths:
     - 'duffle/*'
     - 'porter/*'
