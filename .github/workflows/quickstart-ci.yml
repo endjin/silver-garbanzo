@@ -16,7 +16,7 @@ jobs:
         with:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-          loginServer: ${{ secrets.REGISTRY_SERVER }}
+          login-server: ${{ secrets.REGISTRY_SERVER }}
       - name: Set Up Agent
         env:
           agent_temp_directory: temp
