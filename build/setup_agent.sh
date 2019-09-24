@@ -160,10 +160,12 @@ if [ "${tool}" == "porter" ]; then
 
     # Update the path
 
-    echo ::add-path::${agent_temp_directory}/porter
-    echo ::set-env name=taskdir::${repo_local_path}/porter/${folder}
+    taskdir = ${repo_local_path}/porter/${folder}
 
-    cd "${repo_local_path}/porter/${folder}"
+    echo ::add-path::${porter_home}
+    echo ::set-env name=taskdir::${taskdir}
+
+    cd ${taskdir}
 
     # install yq to parse the porter.yaml file
      
