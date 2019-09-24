@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd ${taskdir}
+
 set -e 
 
 echo "Building Bundle in Solution Directory: $(pwd) using ${tool}"

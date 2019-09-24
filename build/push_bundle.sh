@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd ${taskdir}
+
 set -e 
 
 echo "Installing ORAS"
