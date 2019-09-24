@@ -1,4 +1,4 @@
-# comment for CI 2
+# comment for CI 3
 name: sql-server-always-on
 version: 0.1.0
 description: "SQL Server Always On for AKS"
