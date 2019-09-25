@@ -14,7 +14,7 @@ if [ "${tool}" == "duffle" ]; then
 fi
 
 if [ "${tool}" == "porter" ]; then
-    porter build
+    ${porter_home}/porter build
 fi
 
 printf "Filter:%s\\n" "${image_registry}/${image_repo}"
