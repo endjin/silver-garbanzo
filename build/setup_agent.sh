@@ -158,11 +158,11 @@ if [ "${tool}" == "porter" ]; then
     "${porter_home}/porter" mixin install azure --version "${porter_version}" --feed-url "${feed_url}"
     echo "Installed mixins"
 
-    # Update the path
+    # Export environment variables
 
     taskdir=./${repo_local_path}/porter/${folder}
 
-    echo ::add-path::${porter_home}
+    echo ::set-env name=porter_home::${porter_home}
     echo ::set-env name=taskdir::${taskdir}
 
     cd ${taskdir}
