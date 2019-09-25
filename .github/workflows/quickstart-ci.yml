@@ -6,9 +6,17 @@ on:
       - master
     paths:
       - 'porter/*'
+      - 'porter/*/*'
+      - 'porter/*/*/*'
+      - 'porter/*/*/*/*'
+      - 'porter/*/*/*/*/*'
   pull_request:
     paths:
       - 'porter/*'
+      - 'porter/*/*'
+      - 'porter/*/*/*'
+      - 'porter/*/*/*/*'
+      - 'porter/*/*/*/*/*'
 
 jobs:
   build:
