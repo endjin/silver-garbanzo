@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e 
 
-cnab_quickstart_registry="endjincnabdev01.azurecr.io"
 build_required=false
 
 function check_required_files() {

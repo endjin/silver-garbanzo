@@ -33,6 +33,7 @@ jobs:
           source_branch: ${{ github.ref }}
           repo_uri: https://github.com/${{ github.repository }}
           source_version: ${{ github.sha }}
+          image_registry: ${{ secrets.REGISTRY_SERVER }}
         run: ./build/setup_agent.sh
         shell: bash
       - name: Build bundle
@@ -41,7 +42,7 @@ jobs:
       - name: Docker Push
         run: |
           cd ${taskdir}
-          docker push ${{ secrets.REGISTRY_SERVER }}/${image_repo}:${ii_tag}
+          docker push ${image_registry}/${image_repo}:${ii_tag}
       - name: Push bundle.json to registry using ORAS
         run: ./build/push_bundle.sh
         shell: bash
