@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e 
 
-cnab_quickstart_registry="endjincnabdev01.azurecr.io"
 build_required=false
 
 function check_required_files() {
@@ -56,7 +55,7 @@ printf "tool:%s\\n" "${tool}"
 # Each bundle definition should exist with a directory under the duffle directory - the folder name is derived from the set of files that have been changed in this pull request
 
 if [[ ! -z "${tool}" && ("${tool}" == "duffle" || "${tool}" == "porter") ]]; then
-    if [ "$(find "${repo_local_path}/${tool}" -maxdepth 1 ! -type d ! -name '.*' ! -name README.md)" ]; then 
+    if [ "$(find "${GITHUB_WORKSPACE}/${tool}" -maxdepth 1 ! -type d ! -name '.*' ! -name README.md)" ]; then 
         printf "Files should not be placed in the %s directory - only %s solution folders in this folder. \\n" "${tool}" "${tool}"
         exit 1 
     fi
@@ -66,71 +65,13 @@ fi
 
 printf "folder:%s\\n" "${folder}"
 
-# Duffle based solution
-
-if [ "${tool}" == "duffle" ]; then
-
-    check_required_files
-
-    DUFFLE_VERSION=aciidriver
-    DUFFLE_REPO=simongdavies/duffle
-
-    printf "Downloading Duffle from %s\\n" "https://github.com/${DUFFLE_REPO}/releases/download/${DUFFLE_VERSION}/duffle-linux-amd64"
-
-    mkdir "${agent_temp_directory}/duffle" 
-    curl https://github.com/${DUFFLE_REPO}/releases/download/${DUFFLE_VERSION}/duffle-linux-amd64 -fLo "${agent_temp_directory}/duffle/duffle"
-    chmod +x "${agent_temp_directory}/duffle/duffle"
-
-    echo Installed "duffle: $("${agent_temp_directory}/duffle/duffle" version)"
-
-    echo "Downloaded Duffle"
-
-    # Update the path
-
-    echo ::add-path::${agent_temp_directory}/duffle
-    echo ::set-env name=taskdir::${repo_local_path}/duffle/${folder}
-
-    cd "${repo_local_path}/duffle/${folder}"
-   
-    cnab_name=$(jq '.name' ./duffle.json --raw-output) 
-    echo "CNAB Name:${cnab_name}"
-
-    if [ "${cnab_name}" != "${folder}" ]; then 
-        printf "Name property should in duffle.json should be the same as the solution directory name. Name property:%s Directory Name: %s\\n" "${cnab_name}" "${folder}"
-        exit 1 
-    fi
-
-    # Find the Docker Builder 
-
-    ii_name=$(jq '.invocationImages|.[]|select(.builder=="docker").name' ./duffle.json --raw-output) 
-    echo "ii_name: ${ii_name}"
-
-    # Check the registry name
-
-    registry=$(jq ".invocationImages.${ii_name}.configuration.registry" ./duffle.json --raw-output) 
-    echo "registry: ${registry}"
-
-    if [ "${registry}" != "${cnab_quickstart_registry}/${tool}" ]; then 
-        printf "Registry property of invocation image configuration should be set to %s in duffle.json\\n" "${cnab_quickstart_registry}/${tool}"
-        exit 1 
-    fi
-
-    image_repo="${cnab_name}-${ii_name}" 
-    echo "image_repo: ${image_repo}"
-
-    echo ::set-env name=image_repo::${tool}/${image_repo}
-    echo ::set-env name=image_registry::${cnab_quickstart_registry}
-
-    build_required=true
-fi
-
 # Porter Solution
 
 if [ "${tool}" == "porter" ]; then
 
     check_required_files
 
-    porter_home="${agent_temp_directory}/porter"
+    porter_home="${GITHUB_WORKSPACE}/porter"
 
     # TODO revert release once permission fix is available
     # porter_url=https://cdn.deislabs.io/porter
@@ -160,7 +101,7 @@ if [ "${tool}" == "porter" ]; then
 
     # Export environment variables
 
-    taskdir=./${repo_local_path}/porter/${folder}
+    taskdir=${GITHUB_WORKSPACE}/porter/${folder}
 
     echo ::set-env name=porter_home::${porter_home}
     echo ::set-env name=taskdir::${taskdir}

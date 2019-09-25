@@ -8,11 +8,6 @@ echo "Building Bundle in Solution Directory: $(pwd) using ${tool}"
 
 #TODO add testing support
 
-if [ "${tool}" == "duffle" ]; then
-    duffle init
-    duffle build -o bundle.json
-fi
-
 if [ "${tool}" == "porter" ]; then
     "${porter_home}/porter" build
 fi
