@@ -98,7 +98,7 @@
         }
     },
     "variables": {
-        "imageName":"cnabquickstartstest.azurecr.io/simongdavies/run-duffle:latest"
+        "imageName":"endjincnabdev01.azurecr.io/run-duffle:latest"
     },
     "resources": [
         {

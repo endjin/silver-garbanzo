@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e 
 
-cnab_quickstart_registry="cnabquickstartstest.azurecr.io"
 build_required=false
 
 function check_required_files() {
@@ -29,14 +28,14 @@ echo "Get the files in the PR or merge commit to find the solution folder name"
 
 # TODO ignore files that start with .
 
-if [ "${reason}" == "IndividualCI" ]; then
+if [ "${reason}" == "push" ]; then
     owner_and_repo="${repo_uri##https://github.com/}"
     commit_uri=https://api.github.com/repos/${owner_and_repo}/commits/${source_version}
     echo "Merge Commit uri: ${commit_uri}"
     files=$(curl "${commit_uri}"|jq '[.files[].filename]') 
 fi
 
-if [ "${reason}" == "PullRequest" ]; then
+if [ "${reason}" == "pull_request" ]; then
     pr_uri="https://api.github.com/repos/${repo_name}/pulls/${pr_number}/files"
     echo "PR uri: ${pr_uri}"
     files=$(curl "${pr_uri}"|jq '[.[].filename]') 
@@ -49,79 +48,22 @@ printf "file:\\n%s\\n" "${files}"
 
 tool=$(echo "${files}"|jq 'if . | contains(["/"]) then .|map(select(contains("/")))[0]|split("/")[0]  else empty end' --raw-output)
 
-echo "##vso[task.setvariable variable=tool]${tool}"
+echo ::set-env name=tool::${tool}
 printf "tool:%s\\n" "${tool}"
 
 
 # Each bundle definition should exist with a directory under the duffle directory - the folder name is derived from the set of files that have been changed in this pull request
 
 if [[ ! -z "${tool}" && ("${tool}" == "duffle" || "${tool}" == "porter") ]]; then
-    if [ "$(find "${repo_local_path}/${tool}" -maxdepth 1 ! -type d ! -name '.*' ! -name README.md)" ]; then 
+    if [ "$(find "${GITHUB_WORKSPACE}/${tool}" -maxdepth 1 ! -type d ! -name '.*' ! -name README.md)" ]; then 
         printf "Files should not be placed in the %s directory - only %s solution folders in this folder. \\n" "${tool}" "${tool}"
         exit 1 
     fi
     folder=$(echo "${files}"|jq --arg tool "${tool}" '.|map(select(startswith($tool)))[0]|split("/")[1]' --raw-output)
-    echo "##vso[task.setvariable variable=tool]${tool}"
+    echo ::set-env name=tool::${tool}
 fi
 
 printf "folder:%s\\n" "${folder}"
-
-# Duffle based solution
-
-if [ "${tool}" == "duffle" ]; then
-
-    check_required_files
-
-    DUFFLE_VERSION=aciidriver
-    DUFFLE_REPO=simongdavies/duffle
-
-    printf "Downloading Duffle from %s\\n" "https://github.com/${DUFFLE_REPO}/releases/download/${DUFFLE_VERSION}/duffle-linux-amd64"
-
-    mkdir "${agent_temp_directory}/duffle" 
-    curl https://github.com/${DUFFLE_REPO}/releases/download/${DUFFLE_VERSION}/duffle-linux-amd64 -fLo "${agent_temp_directory}/duffle/duffle"
-    chmod +x "${agent_temp_directory}/duffle/duffle"
-
-    echo Installed "duffle: $("${agent_temp_directory}/duffle/duffle" version)"
-
-    echo "Downloaded Duffle"
-
-    # Update the path
-
-    echo "##vso[task.prependpath]${agent_temp_directory}/duffle"
-    echo "##vso[task.setvariable variable=taskdir]${repo_local_path}/duffle/${folder}"
-
-    cd "${repo_local_path}/duffle/${folder}"
-   
-    cnab_name=$(jq '.name' ./duffle.json --raw-output) 
-    echo "CNAB Name:${cnab_name}"
-
-    if [ "${cnab_name}" != "${folder}" ]; then 
-        printf "Name property should in duffle.json should be the same as the solution directory name. Name property:%s Directory Name: %s\\n" "${cnab_name}" "${folder}"
-        exit 1 
-    fi
-
-    # Find the Docker Builder 
-
-    ii_name=$(jq '.invocationImages|.[]|select(.builder=="docker").name' ./duffle.json --raw-output) 
-    echo "ii_name: ${ii_name}"
-
-    # Check the registry name
-
-    registry=$(jq ".invocationImages.${ii_name}.configuration.registry" ./duffle.json --raw-output) 
-    echo "registry: ${registry}"
-
-    if [ "${registry}" != "${cnab_quickstart_registry}/${tool}" ]; then 
-        printf "Registry property of invocation image configuration should be set to %s in duffle.json\\n" "${cnab_quickstart_registry}/${tool}"
-        exit 1 
-    fi
-
-    image_repo="${cnab_name}-${ii_name}" 
-    echo "image_repo: ${image_repo}"
-
-    echo "##vso[task.setvariable variable=image_repo]${tool}/${image_repo}"
-    echo "##vso[task.setvariable variable=image_registry]${cnab_quickstart_registry}"
-    build_required=true
-fi
 
 # Porter Solution
 
@@ -129,7 +71,7 @@ if [ "${tool}" == "porter" ]; then
 
     check_required_files
 
-    porter_home="${agent_temp_directory}/porter"
+    porter_home="${GITHUB_WORKSPACE}/porter"
 
     # TODO revert release once permission fix is available
     # porter_url=https://cdn.deislabs.io/porter
@@ -157,12 +99,14 @@ if [ "${tool}" == "porter" ]; then
     "${porter_home}/porter" mixin install azure --version "${porter_version}" --feed-url "${feed_url}"
     echo "Installed mixins"
 
-    # Update the path
+    # Export environment variables
 
-    echo "##vso[task.prependpath]${agent_temp_directory}/porter"
-    echo "##vso[task.setvariable variable=taskdir]${repo_local_path}/porter/${folder}"
+    taskdir=${GITHUB_WORKSPACE}/porter/${folder}
 
-    cd "${repo_local_path}/porter/${folder}"
+    echo ::set-env name=porter_home::${porter_home}
+    echo ::set-env name=taskdir::${taskdir}
+
+    cd ${taskdir}
 
     # install yq to parse the porter.yaml file
      
@@ -207,11 +151,11 @@ if [ "${tool}" == "porter" ]; then
     fi
     image_repo="${cnab_name}" 
     echo "image_repo: ${image_repo}"
-    echo "##vso[task.setvariable variable=image_repo]${image_repo}"
-    echo "##vso[task.setvariable variable=image_registry]${cnab_quickstart_registry}/${tool}"
-   
+    
+    echo ::set-env name=image_repo::${image_repo}
+    echo ::set-env name=image_registry::${cnab_quickstart_registry}/${tool}
 
     build_required=true
 fi
 
-echo "##vso[task.setvariable variable=BuildRequired]${build_required}"
+echo ::set-env name=BuildRequired::${build_required}

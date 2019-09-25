@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-CNAB_QUICKSTART_REGISTRY="cnabquickstartstest.azurecr.io"
+CNAB_QUICKSTART_REGISTRY="endjincnabdev01.azurecr.io"
 DEFAULT_CNAB_STATE_SHARE_NAME=cnabstate
 
 # Script to run duffle using ACI Driver in Docker

@@ -142,7 +142,7 @@
 					{
 						"name": "[parameters('containerName')]",
 						"properties": {
-							"image": "cnabquickstartstest.azurecr.io/simongdavies/run-duffle:latest",
+							"image": "endjincnabdev01.azurecr.io/run-duffle:latest",
 							"resources": {
 								"requests": {
 									"cpu": "1.0",

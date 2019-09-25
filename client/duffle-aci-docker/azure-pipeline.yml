@@ -4,7 +4,7 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 variables:
-  repository: simongdavies/run-duffle
+  repository: run-duffle
   tag: latest
 
 steps:

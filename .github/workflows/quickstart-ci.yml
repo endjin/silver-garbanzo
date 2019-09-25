@@ -1,0 +1,56 @@
+name: Quickstart CI
+
+on: 
+  push:
+    branches: 
+      - master
+    paths:
+      - 'porter/*'
+  pull_request:
+    paths:
+      - 'porter/*'
+
+jobs:
+  build:
+    name: Quickstart CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo environment variables
+        run: 'gci Env:'
+        shell: pwsh
+      - name: Use python 3.6
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.6'
+          architecture: 'x64'
+      - name: Checkout Repo
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: Docker Registry Login
+        uses: azure/container-actions/docker-login@master
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+          login-server: ${{ secrets.REGISTRY_SERVER }}
+      - name: Set Up Agent
+        env:
+          repo_name: ${{ github.repository }}
+          pr_number: ${{ github.ref }} # TODO check if we can get PR number
+          reason: ${{ github.event_name }}
+          source_branch: ${{ github.ref }}
+          repo_uri: https://github.com/${{ github.repository }}
+          source_version: ${{ github.sha }}
+          cnab_quickstart_registry: ${{ secrets.REGISTRY_SERVER }}
+        run: ./build/setup_agent.sh
+        shell: bash
+      - name: Build bundle
+        run: ./build/build_bundle.sh
+        shell: bash
+      - name: Docker Push
+        run: |
+          cd ${taskdir}
+          docker push ${image_registry}/${image_repo}:${ii_tag}
+      - name: Push bundle.json to registry using ORAS
+        run: ./build/push_bundle.sh
+        shell: bash
