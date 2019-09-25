@@ -33,7 +33,7 @@ jobs:
           source_branch: ${{ github.ref }}
           repo_uri: https://github.com/${{ github.repository }}
           source_version: ${{ github.sha }}
-          image_registry: ${{ secrets.REGISTRY_SERVER }}
+          cnab_quickstart_registry: ${{ secrets.REGISTRY_SERVER }}
         run: ./build/setup_agent.sh
         shell: bash
       - name: Build bundle
