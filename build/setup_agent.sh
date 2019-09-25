@@ -66,64 +66,6 @@ fi
 
 printf "folder:%s\\n" "${folder}"
 
-# Duffle based solution
-
-if [ "${tool}" == "duffle" ]; then
-
-    check_required_files
-
-    DUFFLE_VERSION=aciidriver
-    DUFFLE_REPO=simongdavies/duffle
-
-    printf "Downloading Duffle from %s\\n" "https://github.com/${DUFFLE_REPO}/releases/download/${DUFFLE_VERSION}/duffle-linux-amd64"
-
-    mkdir "${GITHUB_WORKSPACE}/duffle" 
-    curl https://github.com/${DUFFLE_REPO}/releases/download/${DUFFLE_VERSION}/duffle-linux-amd64 -fLo "${agent_temp_directory}/duffle/duffle"
-    chmod +x "${agent_temp_directory}/duffle/duffle"
-
-    echo Installed "duffle: $("${GITHUB_WORKSPACE}/duffle/duffle" version)"
-
-    echo "Downloaded Duffle"
-
-    # Update the path
-
-    echo ::add-path::${GITHUB_WORKSPACE}/duffle
-    echo ::set-env name=taskdir::${repo_local_path}/duffle/${folder}
-
-    cd "${repo_local_path}/duffle/${folder}"
-   
-    cnab_name=$(jq '.name' ./duffle.json --raw-output) 
-    echo "CNAB Name:${cnab_name}"
-
-    if [ "${cnab_name}" != "${folder}" ]; then 
-        printf "Name property should in duffle.json should be the same as the solution directory name. Name property:%s Directory Name: %s\\n" "${cnab_name}" "${folder}"
-        exit 1 
-    fi
-
-    # Find the Docker Builder 
-
-    ii_name=$(jq '.invocationImages|.[]|select(.builder=="docker").name' ./duffle.json --raw-output) 
-    echo "ii_name: ${ii_name}"
-
-    # Check the registry name
-
-    registry=$(jq ".invocationImages.${ii_name}.configuration.registry" ./duffle.json --raw-output) 
-    echo "registry: ${registry}"
-
-    if [ "${registry}" != "${cnab_quickstart_registry}/${tool}" ]; then 
-        printf "Registry property of invocation image configuration should be set to %s in duffle.json\\n" "${cnab_quickstart_registry}/${tool}"
-        exit 1 
-    fi
-
-    image_repo="${cnab_name}-${ii_name}" 
-    echo "image_repo: ${image_repo}"
-
-    echo ::set-env name=image_repo::${tool}/${image_repo}
-    echo ::set-env name=image_registry::${cnab_quickstart_registry}
-
-    build_required=true
-fi
-
 # Porter Solution
 
 if [ "${tool}" == "porter" ]; then
