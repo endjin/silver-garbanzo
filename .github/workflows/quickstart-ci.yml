@@ -39,7 +39,9 @@ jobs:
         run: ./build/build_bundle.sh
         shell: bash
       - name: Docker Push
-        run: docker push ${{ secrets.REGISTRY_SERVER }}/${image_repo}:${ii_tag}
+        run: |
+          cd ${taskdir}
+          docker push ${{ secrets.REGISTRY_SERVER }}/${image_repo}:${ii_tag}
       - name: Push bundle.json to registry using ORAS
         run: ./build/push_bundle.sh
         shell: bash
