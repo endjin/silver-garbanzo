@@ -7,6 +7,9 @@ jobs:
     name: Quickstart CI
     runs-on: ubuntu-latest
     steps:
+      - name: Echo environment variables
+        run: 'gci Env:'
+        shell: pwsh
       - name: Use python 3.6
         uses: actions/setup-python@v1
         with:
@@ -26,7 +29,6 @@ jobs:
         env:
           repo_name: ${{ github.repository }}
           pr_number: ${{ github.ref }} # TODO check if we can get PR number
-          repo_local_path: .
           reason: ${{ github.event_name }}
           source_branch: ${{ github.ref }}
           repo_uri: https://github.com/${{ github.repository }}
