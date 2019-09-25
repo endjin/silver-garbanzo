@@ -44,7 +44,7 @@ jobs:
       - name: Set Up Agent
         env:
           repo_name: ${{ github.repository }}
-          pr_number: ${{ github.ref }} # TODO check if we can get PR number
+          pr_number: ${{ github.event.number }} # TODO does this break for 'push' events?
           reason: ${{ github.event_name }}
           source_branch: ${{ github.ref }}
           repo_uri: https://github.com/${{ github.repository }}
