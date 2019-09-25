@@ -77,17 +77,17 @@ if [ "${tool}" == "duffle" ]; then
 
     printf "Downloading Duffle from %s\\n" "https://github.com/${DUFFLE_REPO}/releases/download/${DUFFLE_VERSION}/duffle-linux-amd64"
 
-    mkdir "${agent_temp_directory}/duffle" 
+    mkdir "${GITHUB_WORKSPACE}/duffle" 
     curl https://github.com/${DUFFLE_REPO}/releases/download/${DUFFLE_VERSION}/duffle-linux-amd64 -fLo "${agent_temp_directory}/duffle/duffle"
     chmod +x "${agent_temp_directory}/duffle/duffle"
 
-    echo Installed "duffle: $("${agent_temp_directory}/duffle/duffle" version)"
+    echo Installed "duffle: $("${GITHUB_WORKSPACE}/duffle/duffle" version)"
 
     echo "Downloaded Duffle"
 
     # Update the path
 
-    echo ::add-path::${agent_temp_directory}/duffle
+    echo ::add-path::${GITHUB_WORKSPACE}/duffle
     echo ::set-env name=taskdir::${repo_local_path}/duffle/${folder}
 
     cd "${repo_local_path}/duffle/${folder}"
@@ -130,7 +130,7 @@ if [ "${tool}" == "porter" ]; then
 
     check_required_files
 
-    porter_home="${agent_temp_directory}/porter"
+    porter_home="${GITHUB_WORKSPACE}/porter"
 
     # TODO revert release once permission fix is available
     # porter_url=https://cdn.deislabs.io/porter

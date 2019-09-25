@@ -24,7 +24,6 @@ jobs:
           login-server: ${{ secrets.REGISTRY_SERVER }}
       - name: Set Up Agent
         env:
-          agent_temp_directory: temp
           repo_name: ${{ github.repository }}
           pr_number: ${{ github.ref }} # TODO check if we can get PR number
           repo_local_path: .
@@ -40,7 +39,5 @@ jobs:
       - name: Docker Push
         run: docker push ${{ secrets.REGISTRY_SERVER }}/${image_repo}:${ii_tag}
       - name: Push bundle.json to registry using ORAS
-        env:
-          agent_temp_directory: temp
         run: ./build/push_bundle.sh
         shell: bash
