@@ -11,6 +11,8 @@ on:
       - 'porter/*/*/*/*'
       - 'porter/*/*/*/*/*'
   pull_request:
+    branches: 
+      - master
     paths:
       - 'porter/*'
       - 'porter/*/*'
