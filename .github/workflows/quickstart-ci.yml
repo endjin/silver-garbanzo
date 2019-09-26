@@ -46,10 +46,9 @@ jobs:
       - name: Set Up Agent
         env:
           repo_name: ${{ github.repository }}
-          pr_number: ${{ github.event.number }} # TODO does this break for 'push' events?
+          pr_number: ${{ github.event.number }}
           reason: ${{ github.event_name }}
           source_branch: ${{ github.ref }}
-          repo_uri: https://github.com/${{ github.repository }}
           source_version: ${{ github.sha }}
           cnab_quickstart_registry: ${{ secrets.REGISTRY_SERVER }}
         run: ./build/setup_agent.sh
